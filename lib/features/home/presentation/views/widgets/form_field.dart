@@ -4,22 +4,21 @@ class FormFieldMessage extends StatelessWidget {
   const FormFieldMessage({
     super.key,
     required this.controller,
+    required this.isDark,
   });
 
   final TextEditingController controller;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: TextField(
-        onTapOutside: (event) {
-          FocusManager.instance.primaryFocus?.unfocus();
-        },
         cursorColor: Colors.green,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
-          color: Colors.black,
+          color: isDark ? Colors.white : Colors.black,
         ),
         controller: controller,
         decoration: const InputDecoration(

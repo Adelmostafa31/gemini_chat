@@ -1,4 +1,7 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gemini_chat/features/home/data/models/message_models.dart';
 import 'package:gemini_chat/features/home/presentation/views/widgets/app_bar.dart';
 import 'package:gemini_chat/features/home/presentation/views/widgets/decoration.dart';
@@ -6,7 +9,6 @@ import 'package:gemini_chat/features/home/presentation/views/widgets/form_field.
 import 'package:gemini_chat/features/home/presentation/views/widgets/message_item.dart';
 import 'package:gemini_chat/features/home/presentation/views/widgets/send_Icon.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Home extends StatefulWidget {
@@ -31,13 +33,13 @@ class _HomeState extends State<Home> {
           isSender: true,
         ));
         isLoading = true;
-        controller.clear();
         setState(() {});
       }
       final model = GenerativeModel(
-        model: 'gemini-pro',
+        model: 'gemini-1.5-flash-latest',
         apiKey: dotenv.env['GOOGLE_API_KEY']!,
       );
+
       final prompt = controller.text.trim();
       final content = [Content.text(prompt)];
       final response = await model.generateContent(content);
@@ -65,12 +67,18 @@ class _HomeState extends State<Home> {
             });
           },
           child: isDark
-              ? const Icon(
-                  Icons.sunny,
-                  color: Colors.white,
+              ? const Padding(
+                  padding: EdgeInsets.only(right: 10.0),
+                  child: Icon(
+                    Icons.sunny,
+                    color: Colors.white,
+                  ),
                 )
-              : const Icon(
-                  Icons.dark_mode,
+              : const Padding(
+                  padding: EdgeInsets.only(right: 10.0),
+                  child: Icon(
+                    Icons.dark_mode,
+                  ),
                 ),
         ),
       ),
@@ -102,7 +110,10 @@ class _HomeState extends State<Home> {
               decoration: decoration(isDark: isDark),
               child: Row(
                 children: [
-                  FormFieldMessage(controller: controller),
+                  FormFieldMessage(
+                    controller: controller,
+                    isDark: isDark,
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(0),
                     child: isLoading
