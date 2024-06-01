@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
+import 'package:gemini_chat/features/home/presentation/views/home.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: '.env'); 
   runApp(const MainApp());
 }
 
@@ -10,32 +13,10 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       debugShowMaterialGrid: false,
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Lottie.asset('assets/images/animate.json'),
-              const SizedBox(
-                height: 150,
-              ),
-              Text(
-                'By Adel Mostafa',
-                style: TextStyle(
-                  color: Colors.green.withOpacity(0.5),
-                  fontSize: 17,
-                  fontFamily: 'Pacifico',
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      home: Home(),
     );
   }
 }

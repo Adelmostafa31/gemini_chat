@@ -12,14 +12,12 @@ dependencies:
 
 dev_dependencies:
   google_generative_ai: ^0.4.1
-  bloc: ^8.1.4
-  flutter_bloc: ^8.1.5
-  json_annotation: ^4.9.0
-  json_serializable: ^6.8.0
-  build_runner: ^2.4.7
   lottie: ^3.1.2
   flutter_animate: ^4.5.0
   flutter_screenutil: ^5.9.0
+  flutter_native_splash: ^2.4.0
+  flutter_dotenv: ^5.1.0
+  flutter_spinkit: ^5.2.1
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
@@ -29,6 +27,7 @@ flutter:
 
   assets:
     - assets/images/
+    - .env
   fonts:
     - family: Pacifico
       fonts:
