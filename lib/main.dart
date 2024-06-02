@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gemini_chat/features/home/presentation/views/home.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'features/splash/presentation/views/splash.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,7 +16,7 @@ class MainApp extends StatelessWidget {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       debugShowMaterialGrid: false,
-      home: Home(),
+      home: Splash(),
     );
   }
 }

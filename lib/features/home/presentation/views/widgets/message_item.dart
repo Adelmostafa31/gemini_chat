@@ -21,7 +21,7 @@ class MessageItem extends StatelessWidget {
         decoration: BoxDecoration(
           color: message.isSender == false
               ? isDark
-                  ? Colors.white
+                  ? Colors.grey[400]
                   : Colors.grey[300]
               : Colors.green,
           borderRadius: BorderRadius.only(

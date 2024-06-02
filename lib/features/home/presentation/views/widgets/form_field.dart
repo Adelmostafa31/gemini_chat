@@ -16,7 +16,7 @@ class FormFieldMessage extends StatelessWidget {
       child: TextField(
         cursorColor: Colors.green,
         style: TextStyle(
-          fontSize: 20,
+          fontSize: 16,
           fontWeight: FontWeight.bold,
           color: isDark ? Colors.white : Colors.black,
         ),

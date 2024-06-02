@@ -117,9 +117,15 @@ class _HomeState extends State<Home> {
                   Padding(
                     padding: const EdgeInsets.all(0),
                     child: isLoading
-                        ? const SizedBox(
-                            height: 10,
-                            child: SpinKitThreeBounce(color: Colors.green),
+                        ? const Padding(
+                            padding: EdgeInsets.only(right: 5.0),
+                            child: SizedBox(
+                              height: 10,
+                              child: SpinKitThreeBounce(
+                                size: 25,
+                                color: Colors.green,
+                              ),
+                            ),
                           )
                         : GestureDetector(
                             onTap: callGeminiModel,
