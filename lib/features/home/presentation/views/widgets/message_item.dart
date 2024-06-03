@@ -1,48 +1,64 @@
+import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
-import 'package:gemini_chat/features/home/data/models/message_models.dart';
 
 class MessageItem extends StatelessWidget {
   const MessageItem({
     super.key,
-    required this.message,
-    required this.isDark,
+    required this.sendMediaMessage,
+    required this.currentUser,
+    required this.sendMessage,
+    required this.messages,
   });
-
-  final MessageModel message;
-  final bool isDark;
+  final void Function()? sendMediaMessage;
+  final void Function(ChatMessage) sendMessage;
+  final ChatUser currentUser;
+  final List<ChatMessage> messages;
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment:
-          message.isSender ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: message.isSender == false
-              ? isDark
-                  ? Colors.grey[400]
-                  : Colors.grey[300]
-              : Colors.green,
-          borderRadius: BorderRadius.only(
-            bottomLeft: const Radius.circular(20),
-            topRight: const Radius.circular(20),
-            topLeft: Radius.circular(message.isSender ? 20 : 0),
-            bottomRight: Radius.circular(
-              message.isSender ? 0 : 20,
+    return DashChat(
+      messageOptions: const MessageOptions(
+        currentUserContainerColor: Colors.green,
+        containerColor: Color.fromARGB(255, 167, 166, 166),
+        textBeforeMedia: true,
+        textColor: Colors.white,
+      ),
+      inputOptions: InputOptions(
+        sendOnEnter: true,
+        sendButtonBuilder: (send) {
+          return IconButton(
+            onPressed: send,
+            icon: const Image(
+              image: AssetImage(
+                'assets/images/send.png',
+              ),
+              color: Colors.green,
+              width: 30,
+              height: 30,
+            ),
+          );
+        },
+        cursorStyle: const CursorStyle(
+          color: Colors.green,
+        ),
+        autocorrect: true,
+        trailing: [
+          IconButton(
+            onPressed: sendMediaMessage,
+            icon: const Image(
+              image: AssetImage(
+                'assets/images/camera.png',
+              ),
+              color: Colors.green,
+              width: 30,
+              height: 30,
             ),
           ),
-        ),
-        child: Text(
-          message.message,
-          style: TextStyle(
-            color:
-                message.isSender ? Colors.white : Colors.black.withOpacity(0.7),
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        ],
       ),
+      currentUser: currentUser,
+      onSend: sendMessage,
+      messages: messages,
     );
   }
 }

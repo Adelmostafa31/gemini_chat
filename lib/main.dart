@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 import 'features/splash/presentation/views/splash.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: '.env'); 
+  Gemini.init(
+    apiKey: 'AIzaSyCIaJyc5M8ET0qKFUSyYn1-4w-XJjLWkL8',
+  );
   runApp(const MainApp());
 }
 

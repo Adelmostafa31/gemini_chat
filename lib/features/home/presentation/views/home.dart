@@ -1,15 +1,14 @@
 // ignore_for_file: avoid_print
 
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:gemini_chat/features/home/data/models/message_models.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:gemini_chat/features/home/presentation/views/widgets/app_bar.dart';
-import 'package:gemini_chat/features/home/presentation/views/widgets/decoration.dart';
-import 'package:gemini_chat/features/home/presentation/views/widgets/form_field.dart';
 import 'package:gemini_chat/features/home/presentation/views/widgets/message_item.dart';
-import 'package:gemini_chat/features/home/presentation/views/widgets/send_Icon.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:image_picker/image_picker.dart';
+// import 'package:regexp/regexp.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -22,35 +21,85 @@ class _HomeState extends State<Home> {
   final TextEditingController controller = TextEditingController();
   bool isDark = false;
   bool isLoading = false;
+  final Gemini gemini = Gemini.instance;
 
-  final List<MessageModel> mesages = [];
+  List<ChatMessage> messages = [];
 
-  callGeminiModel() async {
+  ChatUser currentUser = ChatUser(id: "0", firstName: "User");
+  ChatUser geminiUser = ChatUser(
+    id: "1",
+    firstName: "Gemini",
+    profileImage:
+        "https://i.pinimg.com/564x/fe/3b/7d/fe3b7dc5a289077c9f31440b6e1c2b43.jpg",
+  );
+  void sendMessage(ChatMessage chatMessage) {
+    setState(() {
+      messages = [chatMessage, ...messages];
+    });
     try {
-      if (controller.text.isNotEmpty) {
-        mesages.add(MessageModel(
-          message: controller.text,
-          isSender: true,
-        ));
-        isLoading = true;
-        setState(() {});
+      String question = chatMessage.text;
+      List<Uint8List>? images;
+      if (chatMessage.medias?.isNotEmpty ?? false) {
+        images = [
+          File(chatMessage.medias!.first.url).readAsBytesSync(),
+        ];
       }
-      final model = GenerativeModel(
-        model: 'gemini-1.5-flash-latest',
-        apiKey: dotenv.env['GOOGLE_API_KEY']!,
-      );
-
-      final prompt = controller.text.trim();
-      final content = [Content.text(prompt)];
-      final response = await model.generateContent(content);
-
-      setState(() {
-        mesages.add(MessageModel(message: response.text!, isSender: false));
-        isLoading = false;
+      gemini
+          .streamGenerateContent(
+        question,
+        images: images,
+      )
+          .listen((event) {
+        ChatMessage? lastMessage = messages.firstOrNull;
+        if (lastMessage != null && lastMessage.user == geminiUser) {
+          lastMessage = messages.removeAt(0);
+          String response = event.content?.parts?.fold(
+                  "", (previous, current) => "$previous ${current.text}") ??
+              "";
+          lastMessage.text += response;
+          setState(
+            () {
+              messages = [lastMessage!, ...messages];
+            },
+          );
+        } else {
+          String response = event.content?.parts?.fold(
+                  "", (previous, current) => "$previous ${current.text}") ??
+              "";
+          ChatMessage message = ChatMessage(
+            user: geminiUser,
+            createdAt: DateTime.now(),
+            text: response,
+          );
+          setState(() {
+            messages = [message, ...messages];
+          });
+        }
       });
-      controller.clear();
     } catch (e) {
       print(e);
+    }
+  }
+
+  void sendMediaMessage() async {
+    ImagePicker picker = ImagePicker();
+    XFile? file = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+    if (file != null) {
+      ChatMessage chatMessage = ChatMessage(
+        user: currentUser,
+        createdAt: DateTime.now(),
+        text: "Describe this picture?",
+        medias: [
+          ChatMedia(
+            url: file.path,
+            fileName: "",
+            type: MediaType.image,
+          )
+        ],
+      );
+      sendMessage(chatMessage);
     }
   }
 
@@ -82,61 +131,11 @@ class _HomeState extends State<Home> {
                 ),
         ),
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: mesages.length,
-                itemBuilder: (context, index) {
-                  final message = mesages[index];
-                  return ListTile(
-                    title: MessageItem(
-                      message: message,
-                      isDark: isDark,
-                    ),
-                  );
-                },
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(
-                right: 20,
-                left: 20,
-                bottom: 20,
-                top: 20,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              decoration: decoration(isDark: isDark),
-              child: Row(
-                children: [
-                  FormFieldMessage(
-                    controller: controller,
-                    isDark: isDark,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(0),
-                    child: isLoading
-                        ? const Padding(
-                            padding: EdgeInsets.only(right: 5.0),
-                            child: SizedBox(
-                              height: 10,
-                              child: SpinKitThreeBounce(
-                                size: 25,
-                                color: Colors.green,
-                              ),
-                            ),
-                          )
-                        : GestureDetector(
-                            onTap: callGeminiModel,
-                            child: const SendIcon(),
-                          ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+      body: MessageItem(
+        sendMediaMessage: sendMediaMessage,
+        messages: messages,
+        currentUser: currentUser,
+        sendMessage: sendMessage,
       ),
     );
   }
