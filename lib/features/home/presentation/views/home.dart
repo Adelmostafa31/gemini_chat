@@ -20,9 +20,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final TextEditingController controller = TextEditingController();
   bool isDark = false;
-  bool isLoading = false;
   final Gemini gemini = Gemini.instance;
-
   List<ChatMessage> messages = [];
 
   ChatUser currentUser = ChatUser(id: "0", firstName: "User");
