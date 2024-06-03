@@ -5,7 +5,7 @@ import 'features/splash/presentation/views/splash.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Gemini.init(
-    apiKey: 'AIzaSyCIaJyc5M8ET0qKFUSyYn1-4w-XJjLWkL8',
+    apiKey: 'YOUR_API_KEY',
   );
   runApp(const MainApp());
 }
